@@ -1,0 +1,3 @@
+C:\Users\mmeloy\Desktop\scout\Proj\Portal\DataCollector\DataCollector\obj\Debug\DataCollector.njsprojAssemblyReference.cache
+C:\Users\mmeloy\Desktop\scout\Proj\Portal\DataCollector\DataCollector\obj\Debug\DataCollector.njsproj.CoreCompileInputs.cache
+C:\Users\mmeloy\Desktop\scout\Proj\Portal\DataCollector\DataCollector\bin\Microsoft.NodejsTools.WebRole.dll
