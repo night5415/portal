@@ -13,6 +13,7 @@ const PathUtil = {
       CheckBrowserCompatability: function () {
         return Promise.resolve(true);
       },
+
       GenerateGuid: function () {
         function _p8(s) {
           var p = (Math.random().toString(16) + "000000000").substr(2, 8);
@@ -24,7 +25,7 @@ const PathUtil = {
        * 
        */
       Login: function (userName, passWord) {
-        let _api = new api(pathVue.$store.getters.url);
+        let _api = new api(pathVue.$store.getters.baseUrl);
         return _api.login(userName, passWord);
       },
       /**

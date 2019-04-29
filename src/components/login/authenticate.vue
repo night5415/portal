@@ -3,10 +3,10 @@
     <v-layout align-center justify-center row fill-height>
       <v-flex flex sm8 md6 lg4>
         <v-card flat color="transparent">
-          <form action>
+          <div>
             <v-text-field v-model="hostandusername" label="Host/UserName" required></v-text-field>
             <v-text-field v-model="password" :counter="10" label="Password" required></v-text-field>
-          </form>
+          </div>
           <v-card-actions>
             <v-btn
               :loading="waiting"
@@ -109,5 +109,17 @@ export default {
 form {
   padding: 25px 20px;
   margin: 10px 0;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: 1px solid green;
+  -webkit-text-fill-color: green;
+  -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+  transition: background-color 5000s ease-in-out 0s;
 }
 </style>

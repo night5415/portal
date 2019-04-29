@@ -62,19 +62,6 @@ export default {
           }, 1000);
         });
     }
-    // downloadPdf(el, invoiceId, invoiceNumber) {
-    //   let self = this,
-    //     url = `~api/invoice/${invoiceId}/invoicepdfdirect`;
-    //   self.$data.downloading = true;
-    //   pathVue.$pathUtil
-    //     .downloadFile(url, invoiceNumber, "pdf")
-    //     .catch(err => {
-    //       console.error("invoice download", err);
-    //     })
-    //     .finally(() => {
-    //       self.$data.downloading = false;
-    //     });
-    // }
   }
 };
 </script>

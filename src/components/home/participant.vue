@@ -3,11 +3,7 @@
     <v-layout>
       <v-flex>
         <v-tabs left slider-color="yellow">
-          <v-tab
-            v-for="person in dataList"
-            :key="person.id"
-            ripple
-          >{{person.FirstName}}</v-tab>
+          <v-tab v-for="person in dataList" :key="person.id" ripple>{{person.FirstName}}</v-tab>
           <v-tab>Messages</v-tab>
           <v-tab-item v-for="person in dataList" :key="person.id">
             <portal-demographic v-bind:person="person"/>

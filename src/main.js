@@ -74,31 +74,22 @@ window.pathVue = new Vue({
     created: function () {
         var self = this;
         console.log(`Patient Portal version ${self.version}`);
-        self.$store.dispatch("updateBaseUrl", getBaseUrl());
-    }
+    },
+    // mounted() {
+    //     //Add some logging to Promise.Catch
+    //     (function (Promise) {
+    //         var originalCatch = Promise.prototype.catch;
+    //         Promise.prototype.catch = function (e) {
+    //             try {
+    //                 console.log('> > > > > > called .catch on %o with arguments: %o', this, arguments);
+    //                 // if (window.pathVue)
+    //                 //     window.pathVue.$pathPouch.exceptions.save(arguments);
+    //             } catch (error) {
+    //                 console.log(error);
+    //             }
+    //             return originalCatch.apply(this, arguments);
+    //         };
+    //     })(window.Promise);
+    // },
 }).$mount("#app");
-/**
- * This gets the base url for all API calls, we will use
- * :9013 for localhost.
- */
-function getBaseUrl() {
-    let hostName = window.location.hostname,
-        local = "http://localhost:9013";
 
-    return hostName === "localhost" ? local : window.location.host;
-}
-
-//Add some logging to Promise.Catch
-// (function (Promise) {
-//     var originalCatch = Promise.prototype.catch;
-//     Promise.prototype.catch = function (v, e, i) {
-//         try { 
-//             console.log('> > > > > > called .catch on %o with arguments: %o', this, arguments);
-//             // if (window.pathVue)
-//             //     window.pathVue.$pathPouch.exceptions.save(arguments);
-//         } catch (error) {
-//             console.log(error);
-//         }
-//         return originalCatch.apply(this, arguments);
-//     };
-// })(window.Promise);

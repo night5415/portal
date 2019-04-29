@@ -12,28 +12,28 @@ const api = class Api {
   }
 
   get participant() {
-    let me = this;
-    return me._callRestful('guardian', 'portalparticipants');
+    let self = this;
+    return self._callRestful('guardian', 'portalparticipants');
   }
 
   get calendar() {
-    let me = this;
-    return me._callNonRestful('calendar/patientportalcalendar');
+    let self = this;
+    return self._callNonRestful('calendar/patientportalcalendar');
   }
 
   get skill() {
-    let me = this;
-    return me._callNonRestful('mastery/skillmastery');
+    let self = this;
+    return self._callNonRestful('mastery/skillmastery');
   }
 
   get session() {
-    let me = this;
-    return me._callNonRestful('session/patientportalsessions');
+    let self = this;
+    return self._callNonRestful('session/patientportalsessions');
   }
 
   get invoice() {
-    let me = this;
-    return me._callNonRestful('invoiceactivity/patientportalinvoicedetail');
+    let self = this;
+    return self._callNonRestful('invoiceactivity/patientportalinvoicedetail');
   }
 
   login(userName, passWord) {
@@ -80,23 +80,63 @@ const api = class Api {
       });
     }
   }
-
+  /** 
+   * 
+  */
   participantImage() {
-    let me = this;
-    return me._callRestful('participant', 'profilepic')
+    let self = this;
+    return self._callRestful('participant', 'profilepic')
       .then((result) => {
         if (result && result.status === 200 && result.data.totalRecords >= 1) {
-          return Promise.resolve(result.data.data[0].PublicUrl);
+          let p = result.data.data[0];
+          return Promise.resolve({
+            Id: p.Id,
+            PublicUrl: p.PublicUrl,
+            Description: p.Description,
+            EntityId: p.EntityId,
+            LinkId: p.LinkId
+          });
         } else {
-          return Promise.resolve('');
+          return Promise.resolve(undefined);
         }
       });
+  }
+  /** 
+   * 
+  */
+  saveToAzureStorage(data, linkType, roleId) {
+    let self = this,
+      formData = new FormData();
+
+    if (!data || !linkType || !roleId)
+      throw new error(`To save to Azure, data must have a linktype and roleId`);
+
+    formData.append('file', data);
+    return self._post('filemanagement', formData, {
+      linkId: self.entityId,
+      fileDescription: '',
+      autoCreate: true,
+      roleId: roleId,
+      linkType: linkType
+    });
+  }
+
+  updateEntity(entity, endpoint, params) {
+    let self = this;
+
+    if (!entity || !endpoint)
+      throw new error('Updates to Entities require an Entity and an Endpoint');
+
+    return self._put(endpoint, entity, params);
   }
 
   /** 
    * private methods
   */
   _callRestful(service, endpoint) {
+    if (!this.entityId)
+      throw new Error(`Restful calls require an entity Id`);
+
     return axios.get(`${this.baseUrl}/~api/${service}/${this.entityId}/${endpoint}`, {
       params: {
         securityToken: store.getters.Token,
@@ -117,6 +157,16 @@ const api = class Api {
         limit: -1
       }
     });
+  }
+
+  _post(endpoint, data, extraParam = {}) {
+    extraParam.securityToken = store.getters.Token
+    return axios.post(`${store.getters.baseUrl}/~api/${endpoint}`, data, { params: extraParam });
+  }
+
+  _put(endpoint, payload, extraParam = {}) {
+    extraParam.securityToken = store.getters.Token;
+    return axios.put(`${store.getters.baseUrl}/~api/${endpoint}/${this.entityId}`, payload, { params: extraParam });
   }
 };
 

@@ -1,6 +1,6 @@
 <template>
   <v-app :dark="darkTheme">
-    <v-toolbar color="transparent">
+    <v-toolbar flat color="transparent">
       <v-toolbar-title>Parent Portal</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click="logOut" :hidden="notLoggedInYet">
@@ -12,7 +12,12 @@
     <transition name="fade" mode="out-in">
       <router-view></router-view>
     </transition>
-    <v-avatar color="transparent" class="fixed-logo">
+    <v-avatar
+      color="transparent"
+      class="fixed-logo"
+      @click="onLogo_Click"
+      @dblclick="onLogo_DblClick"
+    >
       <v-img src="/img/icons/apple-touch-icon-180x180.png" contain height="90"></v-img>
     </v-avatar>
   </v-app>
@@ -56,6 +61,18 @@ export default {
             self.$pathUtil.LogOut();
           }
         });
+    },
+    onLogo_Click() {
+      var self = this;
+      self.$store.dispatch(
+        "updateUserName",
+        "test-lighthouse.abpathfinder.net/night5415"
+      );
+    },
+    onLogo_DblClick() {
+      var self = this;
+      //TODO: this is only for testing!!!!!!
+      self.$store.dispatch("updateUserName", "localhost:9013/night5415");
     }
   },
   data() {
@@ -89,5 +106,13 @@ export default {
   position: fixed;
   bottom: 10px;
   left: 10px;
+}
+html {
+  overflow: hidden;
+}
+body {
+  /* Disables pull-to-refresh and overscroll glow effect.
+     Still keeps swipe navigations. */
+  overscroll-behavior-y: none;
 }
 </style>

@@ -8,7 +8,6 @@ const app = {
         dark: true,
         isOnline: true,
         isLoggedIn: false,
-        baseUrl: 'https://test-lighthouse.abpathfinder.net', //depricated
         mini: false
     },
     mutations: {
@@ -23,9 +22,6 @@ const app = {
         },
         _updateMini(state, val) {
             state.mini = val;
-        },
-        _updateBaseUrl(state, val) {
-            state.baseUrl = val;
         }
     },
     getters: {
@@ -37,12 +33,6 @@ const app = {
         },
         isLoggedIn: state => {
             return state.isLoggedIn;
-        },
-        baseUrl: state => {
-            return state.baseUrl;
-        },
-        mini: state => {
-            return state.mini;
         }
     },
     actions: {
@@ -54,12 +44,6 @@ const app = {
         },
         updateDark: (context, value) => {
             context.commit("_updateDark", value);
-        },
-        updateMini: (context, value) => {
-            context.commit("_updateMini", value);
-        },
-        updateBaseUrl: (context, value) => {
-            context.commit("_updateBaseUrl", value);
         }
     }
 };
@@ -95,17 +79,19 @@ const security = {
 const user = {
     state: {
         Id: null,
-        HostUserName: 'localhost:9013/night5415',
-        PassWord: '11111111',
+        HostUserName: null,
+        PassWord: null,
         hash: null
     },
     getters: {
         userId: state => {
             return state.Id;
         },
-        url: state => {
-            let firstIndex = state.HostUserName.split('/')[0];
-            return `http://${firstIndex}`;
+        baseUrl: state => {
+            let firstIndex = state.HostUserName.split('/')[0],
+                isLocalHost = state.HostUserName.indexOf("local") >= 0,
+                protocol = isLocalHost ? 'HTTP' : 'HTTPS';
+            return `${protocol}://${firstIndex}`;
         },
         hostAndUserName: state => {
             return state.HostUserName;
