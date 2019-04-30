@@ -4,6 +4,7 @@ import SimpleCrypto from "simple-crypto-js";
 import { dataStore } from "@/statics/pathConstants";
 
 let _participantDb = null,
+    _accountDb = null,
     _sessionDb = null,
     _invoiceDb = null,
     _skillDb = null,
@@ -29,6 +30,13 @@ let pathDb = {
                 getById: _loginDb.getById,
                 getAll: _loginDb.getAll,
                 _db: _loginDb
+            },
+            account: {
+                save: _accountDb.save,
+                saveOrUpdate: _accountDb.saveOrUpdate,
+                getById: _accountDb.getById,
+                getAll: _accountDb.getAll,
+                _db: _accountDb
             },
             participant: {
                 save: _participantDb.save,
@@ -89,6 +97,7 @@ let pathDb = {
         _exceptionDb = dbConfig.exceptions();
         _participantDb = dbConfig.participant();
         _loginDb = dbConfig.logins();
+        _accountDb = dbConfig.account();
         _sessionDb = dbConfig.sessions();
         _skillDb = dbConfig.skills();
         _calendarDb = dbConfig.calendar();
@@ -186,6 +195,10 @@ let dbConfig = {
         // });
         return db;
     },
+    account: function () {
+        let db = new PouchDB(dataStore.account, { revs_limit: 1, auto_compaction: true });
+        return db;
+    }
 };
 
 let _exceptionFunc = {

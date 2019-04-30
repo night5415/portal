@@ -30,18 +30,14 @@ export default {
     download() {
       let self = this;
 
-      self.$data.load = true;
+      self.load = true;
       pathVue.$pathUtil
-        .downloadFile(
-          self.$props.url,
-          self.$props.fileName,
-          self.$props.fileType
-        )
+        .downloadFile(self.url, self.fileName, self.fileType)
         .catch(err => {
           console.error("downloader", err);
         })
         .finally(() => {
-          self.$data.load = false;
+          self.load = false;
         });
     }
   }

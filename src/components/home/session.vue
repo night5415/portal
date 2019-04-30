@@ -15,7 +15,7 @@ export default {
   name: "session",
   mounted() {
     let self = this,
-      list = self.$data.dataList;
+      list = self.dataList;
     if (list && list.length === 0) {
       self.loadData();
     }
@@ -36,17 +36,17 @@ export default {
   methods: {
     loadData() {
       let self = this;
-      self.$data.gridLoading = true;
+      self.gridLoading = true;
       sessionApi
         .cacheFirst(self)
         .catch(err => {
           console.log("session vue", err);
         })
         .finally(function() {
-          self.$data.dataProgress = 100;
+          self.dataProgress = 100;
           setTimeout(() => {
-            self.$data.gridLoading = false;
-            self.$data.dataProgress = 0;
+            self.gridLoading = false;
+            self.dataProgress = 0;
           }, 1000);
         });
     }

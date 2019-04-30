@@ -18,8 +18,8 @@ export default {
   methods: {
     showSnack(message) {
       var self = this;
-      this.$data.snackbar = true;
-      this.$data.snackMessage = message;
+      self.snackbar = true;
+      self.snackMessage = message;
     }
   }
 };

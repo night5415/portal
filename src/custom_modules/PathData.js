@@ -2,6 +2,15 @@ import { api } from "@/custom_modules/PathApi";
 import store from "@/pathStore";
 import { dataStore } from "@/statics/pathConstants"
 
+const accountApi = {
+    networkOnly: (comp, dataProp, accountId) => {
+        return _private.service(dataStore.account, comp, dataProp, null, accountId)
+            .catch((err) => {
+                return Promise.reject(err);
+            })
+    }
+}
+
 const participantApi = {
     /**
      * @param {VueComponent} comp The component which the call is comming from 'This'
@@ -134,7 +143,8 @@ export {
     sessionApi,
     skillApi,
     calendarApi,
-    invoiceApi
+    invoiceApi,
+    accountApi
 };
 
 const _private = {
@@ -199,7 +209,8 @@ const _private = {
             comp = arguments[1],
             prop = arguments[2] || 'dataList',
             progress = arguments[3] || 'dataProgress',
-            _api = new api(pathVue.$store.getters.baseUrl, pathVue.$store.getters.userId),
+            entityId = arguments[4] || pathVue.$store.getters.userId,
+            _api = new api(pathVue.$store.getters.baseUrl, entityId),
             _service;
 
         if (!comp)

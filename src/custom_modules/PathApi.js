@@ -36,6 +36,11 @@ const api = class Api {
     return self._callNonRestful('invoiceactivity/patientportalinvoicedetail');
   }
 
+  get account() {
+    let self = this;
+    return self._callRestful('account', 'demographics');
+  }
+
   login(userName, passWord) {
     let formData = new FormData(),
       isOnline = store.getters.isOnline,

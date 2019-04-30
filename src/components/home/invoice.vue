@@ -24,7 +24,7 @@ export default {
   name: "invoice",
   mounted() {
     let self = this,
-      list = self.$data.dataList;
+      list = self.dataList;
     if (list && list.length === 0) {
       self.loadData();
     }
@@ -48,17 +48,17 @@ export default {
   methods: {
     loadData() {
       let self = this;
-      self.$data.gridLoading = true;
+      self.gridLoading = true;
       invoiceApi
         .cacheFirst(self)
         .catch(err => {
           console.log("invoice vue", err);
         })
         .finally(function() {
-          self.$data.dataProgress = 100;
+          self.dataProgress = 100;
           setTimeout(() => {
-            self.$data.gridLoading = false;
-            self.$data.dataProgress = 0;
+            self.gridLoading = false;
+            self.dataProgress = 0;
           }, 1000);
         });
     }

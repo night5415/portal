@@ -40,7 +40,7 @@ export default {
   name: "calendar",
   mounted() {
     let self = this,
-      list = self.$data.dataList;
+      list = self.dataList;
     if (list && list.length === 0) {
       self.loadData();
     }
@@ -64,14 +64,14 @@ export default {
   methods: {
     onCalendar_Change(values) {
       var self = this;
-      self.$data.title = new pathVue.$moment(values.start.date).format("MMMM");
+      self.title = new pathVue.$moment(values.start.date).format("MMMM");
       console.log(
         `calendar has changed from ${values.start.date} to ${values.end.date}`
       );
     },
     loadData() {
       let self = this;
-      self.$data.gridLoading = true;
+      self.gridLoading = true;
       calendarApi
         .cacheFirst(self)
         .then(results => {

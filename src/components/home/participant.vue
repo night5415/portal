@@ -21,7 +21,7 @@ export default {
   name: "participant",
   mounted() {
     let self = this,
-      list = self.$data.dataList;
+      list = self.dataList;
     if (list && list.length === 0) {
       self.loadData();
     }
@@ -36,7 +36,7 @@ export default {
   methods: {
     loadData() {
       let self = this;
-      self.$data.gridLoading = true;
+      self.gridLoading = true;
       participantApi
         .cacheFirst(self)
         .then(results => {

@@ -26,7 +26,8 @@ export default {
   name: "signature",
   props: ["title", "referenceId"],
   mounted: function() {
-    this.$refs[this.$props.referenceId].resizeCanvas();
+    let self = this;
+    self.$refs[self.referenceId].resizeCanvas();
   },
   data() {
     return {
@@ -36,18 +37,19 @@ export default {
   },
   methods: {
     undo() {
-      this.$refs[this.$props.referenceId].resizeCanvas();
-      this.$refs[this.$props.referenceId].undoSignature();
+      let self = this;
+      self.$refs[self.referenceId].resizeCanvas();
+      self.$refs[self.referenceId].undoSignature();
     },
     save() {
-      const { isEmpty, data } = this.$refs[
-        this.$props.referenceId
-      ].saveSignature();
-      this.value = data;
-      this.dialog = false;
+      let self = this;
+      const { isEmpty, data } = self.$refs[self.referenceId].saveSignature();
+      self.value = data;
+      self.dialog = false;
     },
     getSignatureData() {
-      return this.value;
+      let self = this;
+      return self.value;
     }
   }
 };

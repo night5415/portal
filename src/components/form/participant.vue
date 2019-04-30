@@ -46,16 +46,32 @@
                 </v-menu>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-autocomplete :items="gender" label="Gender*" required></v-autocomplete>
+                <v-autocomplete
+                  ref="genderCodeId"
+                  :items="gender"
+                  label="Gender*"
+                  required
+                  :value="genderCode"
+                ></v-autocomplete>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-autocomplete :items="ethnicity" label="Ethnicity"></v-autocomplete>
+                <v-autocomplete
+                  ref="ethnicityCodeId"
+                  :items="ethnicity"
+                  label="Ethnicity"
+                  :value="ethnicityCode"
+                ></v-autocomplete>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-autocomplete :items="race" label="Race"></v-autocomplete>
+                <v-autocomplete ref="raceCodeId" :items="race" label="Race" :value="raceCode"></v-autocomplete>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-autocomplete :items="language" label="language"></v-autocomplete>
+                <v-autocomplete
+                  ref="languageCodeId"
+                  :items="language"
+                  label="Language"
+                  :value="languageCode"
+                ></v-autocomplete>
               </v-flex>
             </v-layout>
           </v-container>
@@ -94,19 +110,62 @@ export default {
       user_save: false
     };
   },
-  mounted() {},
+  computed: {
+    genderCode: {
+      get() {
+        let self = this;
+        return self.getParticipantCodeId("GenderCode");
+      }
+      // set: function(newValue) {
+      //   let self = this;
+      //   self.person.GenderId = newValue;
+      // }
+    },
+    languageCode: {
+      get() {
+        let self = this;
+        return self.getParticipantCodeId("LanguageCode");
+      }
+      // set: function(newValue) {
+      //   let self = this;
+      //   self.person.LanguageId = newValue;
+      // }
+    },
+    raceCode: {
+      get() {
+        let self = this;
+        return self.getParticipantCodeId("RaceCode");
+      }
+      // set: function(newValue) {
+      //   let self = this;
+      //   self.person.RaceId = newValue;
+      // }
+    },
+    ethnicityCode: {
+      get() {
+        let self = this;
+        return self.getParticipantCodeId("EthnicityCode");
+      }
+      // set: function(newValue) {
+      //   let self = this;
+      //   self.person.EthnicityId = newValue;
+      // }
+    }
+  },
   methods: {
     open() {
-      this.$data.openParticipantProfile = true;
+      let self = this;
+      self.openParticipantProfile = true;
     },
     onSave_Click() {
       let self = this,
-        patApi = new api(pathVue.$store.getters.baseUrl, self.person.Id);
+        patApi = new api(pathVue.$store.getters.baseUrl, self.person.Id),
+        obj = self.getParticipantSaveObj();
 
       self.user_save = true;
 
       patApi
-        .updateEntity(self.person, "participant")
+        .updateEntity(obj, "participant")
         .then(result => {
           if (!result && result.status !== 200) throw new error("error");
 
@@ -119,6 +178,37 @@ export default {
         .finally(() => {
           self.user_save = false;
         });
+    },
+    getParticipantCodeId(prop) {
+      let self = this,
+        person = self.person;
+      if (!person || !person[prop]) return;
+
+      return self.person[prop].Id.toLowerCase();
+    },
+    getParticipantSaveObj() {
+      let self = this,
+        person = self.person;
+
+      return {
+        FirstName: person.FirstName,
+        MiddleName: person.MiddleName,
+        LastName: person.LastName,
+        DOB: person.DOB,
+        GenderId:
+          self.$refs.genderCodeId.value ||
+          self.getParticipantCodeId("GenderCode"),
+        EthnicityId:
+          self.$refs.ethnicityCodeId.value ||
+          self.getParticipantCodeId("EthnicityCode"),
+        RaceId:
+          self.$refs.raceCodeId.value || self.getParticipantCodeId("RaceCode"),
+        LanguageId:
+          self.$refs.languageCodeId.value ||
+          self.getParticipantCodeId("LanguageCode"),
+        IsNew: false,
+        Id: person.Id
+      };
     }
   }
 };

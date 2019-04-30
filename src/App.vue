@@ -1,11 +1,41 @@
 <template>
   <v-app :dark="darkTheme">
-    <v-toolbar flat color="transparent">
-      <v-toolbar-title>Parent Portal</v-toolbar-title>
+    <v-toolbar flat app dense>
+      <v-toolbar-title>Patient Portal</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click="logOut" :hidden="notLoggedInYet">
-        <v-icon>exit_to_app</v-icon>
-      </v-btn>
+      <v-menu bottom left>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>more_vert</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-tile @click="onAccountEdit_Click">
+            <v-list-tile-action>
+              <v-icon>person</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Account</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile @click="onLogOut_Click">
+            <v-list-tile-action>
+              <v-icon>exit_to_app</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Log Out</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-switch v-model="darkTheme"></v-switch>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Theme</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
     </v-toolbar>
     <portal-confirm ref="pathConfirm"/>
     <portal-snack ref="pathSnack"/>
@@ -20,6 +50,7 @@
     >
       <v-img src="/img/icons/apple-touch-icon-180x180.png" contain height="90"></v-img>
     </v-avatar>
+    <portal-account-info ref="edit_account"/>
   </v-app>
 </template> 
 <script>
@@ -47,7 +78,7 @@ export default {
       const { type } = e;
       this.$store.dispatch("updateIsOnline", type === "online");
     },
-    logOut(self) {
+    onLogOut_Click(self) {
       var self = this;
       pathVue.$pathComponents
         .Confirm({
@@ -62,6 +93,7 @@ export default {
           }
         });
     },
+    //TODO: this is only for testing!!!!!!
     onLogo_Click() {
       var self = this;
       self.$store.dispatch(
@@ -71,12 +103,18 @@ export default {
     },
     onLogo_DblClick() {
       var self = this;
-      //TODO: this is only for testing!!!!!!
       self.$store.dispatch("updateUserName", "localhost:9013/night5415");
+    },
+    onAccountEdit_Click() {
+      let self = this;
+      self.$refs.edit_account.open();
     }
   },
+  //TODO: this is only for testing!!!!!!
   data() {
-    return {};
+    return {
+      darkTheme: true
+    };
   },
   computed: {
     notLoggedInYet: {

@@ -43,8 +43,8 @@ window.onerror = function (messageOrEvent, source, lineno, colno, error) {
         column: colno
     };
 
-    if (pathVue)
-        pathVue.$pathPouch.exceptions.save(err);
+    if (window.pathVue)
+        window.pathVue.$pathPouch.exceptions.save(err);
 
     return true;
 };
@@ -54,6 +54,7 @@ Vue.config.errorHandler = (error, vm, info) => {
         message: error.message,
         stack: error.stack
     });
+    console.error(error.message, error);
 };
 
 Vue.config.warnHandler = function (msg, vm, trace) {

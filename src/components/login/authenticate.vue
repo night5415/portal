@@ -1,25 +1,19 @@
 <template>
-  <v-container fluid>
-    <v-layout align-center justify-center row fill-height>
-      <v-flex flex sm8 md6 lg4>
-        <v-card flat color="transparent">
-          <div>
-            <v-text-field v-model="hostandusername" label="Host/UserName" required></v-text-field>
-            <v-text-field v-model="password" :counter="10" label="Password" required></v-text-field>
-          </div>
-          <v-card-actions>
-            <v-btn
-              :loading="waiting"
-              :disabled="waiting"
-              v-on:click="onLogin_Click"
-              flat
-              color="blue"
-            >Login</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <v-card flat color="transparent">
+    <div>
+      <v-text-field v-model="hostandusername" label="Host/UserName" required></v-text-field>
+      <v-text-field v-model="password" :counter="10" label="Password" required></v-text-field>
+    </div>
+    <v-card-actions>
+      <v-btn
+        :loading="waiting"
+        :disabled="waiting"
+        v-on:click="onLogin_Click"
+        flat
+        color="blue"
+      >Login</v-btn>
+    </v-card-actions>
+  </v-card>
 </template> 
 <script>
 export default {

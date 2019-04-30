@@ -1,7 +1,7 @@
 <template>
-  <v-container bg fill-height grid-list-md text-xs-center>
-    <v-layout row wrap align-center>
-      <v-flex>
+  <v-container fluid>
+    <v-layout align-center justify-center row fill-height>
+      <v-flex flex sm8 md6 lg4>
         <portal-authenticate/>
       </v-flex>
     </v-layout>

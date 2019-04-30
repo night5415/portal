@@ -25,6 +25,18 @@ export default {
             });
             return formatter.format(value);
         });
+        Vue.filter('toLowerCase', function (value) {
+            if (typeof value !== "string")
+                return '';
+
+            return value.toLowerCase();
+        });
+        Vue.filter('toUpperCase', function (value) {
+            if (typeof value !== "string")
+                return '';
+
+            return value.toUpperCase();
+        });
     }
 }
 

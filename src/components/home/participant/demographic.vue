@@ -67,7 +67,7 @@
         </v-data-table>
       </v-flex>
     </v-layout>
-    <portal-participant-info ref="edit" v-bind:person="person" v-model="showDialog"/>
+    <portal-participant-info ref="edit_patient" v-bind:person="person" v-model="showDialog"/>
   </v-container>
 </template>
 
@@ -93,24 +93,24 @@ export default {
   },
   mounted() {
     let self = this,
-      patApi = new api(pathVue.$store.getters.baseUrl, self.$props.person.Id);
-    self.$data.imgLoading = true;
-    self.$data.imgLoadingHeight = 2;
+      patApi = new api(pathVue.$store.getters.baseUrl, self.person.Id);
+    self.imgLoading = true;
+    self.imgLoadingHeight = 2;
     patApi
       .participantImage()
       .then(result => {
-        self.$data.profile = result;
+        self.profile = result;
       })
       .catch(err => {})
       .finally(function() {
-        self.$data.imgLoading = false;
-        self.$data.imgLoadingHeight = 0;
+        self.imgLoading = false;
+        self.imgLoadingHeight = 0;
       });
   },
   methods: {
     edit_OnClick() {
       let self = this;
-      self.$refs.edit.open();
+      self.$refs.edit_patient.open();
     },
     profile_OnClick() {
       this.$refs.image.click();
@@ -120,7 +120,7 @@ export default {
         file = e.target.files[0],
         reader = new FileReader(),
         linkType = "participant",
-        currentImg = self.$data.profile,
+        currentImg = self.profile,
         newImp,
         roleId = "7d11bd7b-2ea4-4344-942e-0add07866ab3"; //DocrolePatprofilepic
 
@@ -145,17 +145,14 @@ export default {
             });
         })
           .then(results => {
-            let azureApi = new api(
-              self.$store.getters.baseUrl,
-              self.$props.person.Id
-            );
+            let azureApi = new api(self.$store.getters.baseUrl, self.person.Id);
             return azureApi.saveToAzureStorage(file, linkType, roleId);
           })
           .then(result => {
             let newDocument = result.data.data[0];
             self.profile = {
               PublicUrl: val.target.result,
-              LinkId: self.$props.person.Id,
+              LinkId: self.person.Id,
               EntityId: entity.participant,
               Id: newDocument.documentId
             };
