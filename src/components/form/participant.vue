@@ -116,40 +116,24 @@ export default {
         let self = this;
         return self.getParticipantCodeId("GenderCode");
       }
-      // set: function(newValue) {
-      //   let self = this;
-      //   self.person.GenderId = newValue;
-      // }
     },
     languageCode: {
       get() {
         let self = this;
         return self.getParticipantCodeId("LanguageCode");
       }
-      // set: function(newValue) {
-      //   let self = this;
-      //   self.person.LanguageId = newValue;
-      // }
     },
     raceCode: {
       get() {
         let self = this;
         return self.getParticipantCodeId("RaceCode");
       }
-      // set: function(newValue) {
-      //   let self = this;
-      //   self.person.RaceId = newValue;
-      // }
     },
     ethnicityCode: {
       get() {
         let self = this;
         return self.getParticipantCodeId("EthnicityCode");
       }
-      // set: function(newValue) {
-      //   let self = this;
-      //   self.person.EthnicityId = newValue;
-      // }
     }
   },
   methods: {

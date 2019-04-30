@@ -3,6 +3,20 @@ import store from "@/pathStore";
 import { dataStore } from "@/statics/pathConstants"
 
 const accountApi = {
+    cacheFirst: (comp, dataProp, accountId) => {
+        return _private.cache(dataStore.account, comp, dataProp, true)
+            .then(() => {
+                if (store.getters.isOnline) {
+                    return _private.service(dataStore.account, comp, dataProp, null, accountId);
+                } else {
+                    Promise.resolve(true);
+                }
+            })
+            .catch((err) => {
+                return Promise.reject(err);
+            })
+
+    },
     networkOnly: (comp, dataProp, accountId) => {
         return _private.service(dataStore.account, comp, dataProp, null, accountId)
             .catch((err) => {

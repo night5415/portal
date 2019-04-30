@@ -69,9 +69,9 @@ const api = class Api {
             context = loginJson.data.SecurityContext,
             person = context.Person;
 
-
           //save to Vuex store
           store.dispatch("updateSecurityToken", loginJson.data.securityToken);
+          store.dispatch("updateAccountId", context.Account.Id);
           //save to PouchDB
           let newLogin = JSON.parse(JSON.stringify(context));
           pathVue.$pathUtil.generateKey(`${userName}${passWord}`, `${userName}${passWord}`)
@@ -171,6 +171,7 @@ const api = class Api {
 
   _put(endpoint, payload, extraParam = {}) {
     extraParam.securityToken = store.getters.Token;
+
     return axios.put(`${store.getters.baseUrl}/~api/${endpoint}/${this.entityId}`, payload, { params: extraParam });
   }
 };

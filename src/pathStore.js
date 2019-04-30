@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { stat } from "fs";
 
 Vue.use(Vuex);
 // app specific state goes here
@@ -79,18 +80,24 @@ const security = {
 const user = {
     state: {
         Id: null,
+        AccountId: null,
         HostUserName: null,
         PassWord: null,
         hash: null
     },
     getters: {
+        accountId: state => {
+            return state.AccountId;
+        },
         userId: state => {
             return state.Id;
         },
         baseUrl: state => {
-            let firstIndex = state.HostUserName.split('/')[0],
-                isLocalHost = state.HostUserName.indexOf("local") >= 0,
+            let hostUserName = state.HostUserName || '',
+                firstIndex = hostUserName.split('/')[0],
+                isLocalHost = hostUserName.indexOf("local") >= 0,
                 protocol = isLocalHost ? 'HTTP' : 'HTTPS';
+
             return `${protocol}://${firstIndex}`;
         },
         hostAndUserName: state => {
@@ -112,6 +119,9 @@ const user = {
         },
         _updatePassWord(state, val) {
             state.PassWord = val;
+        },
+        _updateAccountId(state, val) {
+            state.AccountId = val;
         }
     },
     actions: {
@@ -123,6 +133,9 @@ const user = {
         },
         updatePassWord: (context, value) => {
             context.commit("_updatePassWord", value);
+        },
+        updateAccountId: (context, value) => {
+            context.commit("_updateAccountId", value);
         }
     }
 };
@@ -143,6 +156,7 @@ export default new Vuex.Store({
             this.dispatch("updateUserId", null);
             this.dispatch("updateUserName", null);
             this.dispatch("updatePassWord", null);
+            this.dispatch("updateAccountId", null);
         }
     },
     //actions are asynchronous

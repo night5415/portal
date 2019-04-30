@@ -10,6 +10,7 @@
         <v-card-title>
           <span class="headline">Account</span>
         </v-card-title>
+        <v-progress-linear :height="imgLoadingHeight" v-model="dataProgress"></v-progress-linear>
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
@@ -23,16 +24,29 @@
                 <v-text-field v-model="account.LastName" label="Last name*" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="primaryEmail" label="Email*" required></v-text-field>
+                <v-text-field
+                  maxlength="9"
+                  :mask="phoneMask"
+                  v-model="primaryPhone.PhoneNumber"
+                  label="Phone"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md4>
+                <v-text-field
+                  :rules="emailRules"
+                  v-model="primaryEmail.Uri"
+                  label="Email*"
+                  required
+                ></v-text-field>
               </v-flex>
             </v-layout>
 
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="primaryAddress.Street1" label="Street 1"></v-text-field>
+                <v-text-field v-model="primaryAddress.Street1" label="Street 1" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="primaryAddress.Street2" label="Street 2" required></v-text-field>
+                <v-text-field v-model="primaryAddress.Street2" label="Street 2"></v-text-field>
               </v-flex>
             </v-layout>
             <v-layout wrap>
@@ -40,13 +54,18 @@
                 <v-text-field v-model="primaryAddress.City" label="City"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-text-field label="State" required></v-text-field>
+                <v-autocomplete
+                  ref="stateCodeId"
+                  :items="state"
+                  label="State"
+                  :value="accountState.Id"
+                ></v-autocomplete>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="primaryAddress.PostalCode" label="Zip Code" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="account.LastName" label="Country" required></v-text-field>
+                <v-autocomplete :items="country" label="Country" :value="accountCountry.Id"></v-autocomplete>
               </v-flex>
             </v-layout>
           </v-container>
@@ -72,29 +91,66 @@
 <script>
 import { accountApi } from "@/custom_modules/PathData";
 import { api } from "@/custom_modules/PathApi";
+import { autoSelect } from "@/statics/pathConstants";
 export default {
   name: "account-info",
   data() {
     return {
+      phoneMask: "(###)-###-####",
+      emailRules: [v => /.+@.+/.test(v) || "Invalid Email address"],
       dataList: [],
       dataProgress: 0,
-      gridLoading: false,
-      account: {},
+      accountLoading: false,
+      imgLoadingHeight: 0,
       openAccountProfile: false,
-      user_save: false
+      user_save: false,
+      state: autoSelect.state,
+      country: autoSelect.country
     };
   },
   computed: {
+    primaryPhone: {
+      get() {
+        let self = this;
+        return self.getAccountPhoneOrDefault();
+      }
+    },
     primaryAddress: {
       get() {
         let self = this;
-        return self.getAccountAddressObjectOrDefault();
+        return self.getAccountAddressOrDefault();
       }
     },
     primaryEmail: {
       get() {
         let self = this;
         return self.getEmailOrDefault();
+      }
+    },
+    accountState: {
+      get() {
+        let self = this;
+        return self.getAccountStateOrDefault();
+      }
+    },
+    accountCountry: {
+      get() {
+        let self = this;
+        return self.getAccountCountryOrDefault();
+      }
+    },
+    accountId: {
+      get() {
+        let self = this;
+        return self.$store.getters.accountId;
+      }
+    },
+    account: {
+      get() {
+        let self = this,
+          hasAccount = self.dataList.length > 0;
+
+        return !hasAccount ? {} : self.dataList[0];
       }
     }
   },
@@ -106,40 +162,41 @@ export default {
     loadData() {
       let self = this;
       self.gridLoading = true;
+      self.openAccountProfile = true;
+      self.imgLoadingHeight = 2;
+
       accountApi
-        .networkOnly(self, null, "dfc540c2-61cf-41c1-9a1b-1493a1bbe428")
+        .cacheFirst(self, null, self.accountId)
         .catch(err => {
           console.error("account vue", err);
         })
         .finally(function() {
           self.dataProgress = 100;
-          self.openAccountProfile = true;
           if (self.dataList.length > 0) {
             self.account = self.dataList[0];
           }
           setTimeout(() => {
             self.gridLoading = false;
             self.dataProgress = 0;
+            self.imgLoadingHeight = 0;
           }, 1000);
         });
     },
     onSave_Click() {
       let self = this,
-        patApi = new api(
-          pathVue.$store.getters.baseUrl,
-          "dfc540c2-61cf-41c1-9a1b-1493a1bbe428"
-        ),
-        fd = self.getAccountFormData();
+        userId = self.$store.getters.userId,
+        patApi = new api(self.$store.getters.baseUrl, self.accountId),
+        fd = self._accountFormData(self.accountId, userId);
 
       self.user_save = true;
 
       patApi
-        .updateEntity({}, "account", fd)
+        .updateEntity(fd, "account")
         .then(result => {
           if (!result && result.status !== 200) throw new error("error");
 
           pathVue.$pathComponents.Snack("Update Successful!");
-          self.openParticipantProfile = false;
+          self.openAccountProfile = false;
         })
         .catch(err => {
           pathVue.$pathComponents.Snack("Update Failed!");
@@ -152,41 +209,57 @@ export default {
       let self = this,
         hasEmail = self.account && self.account.PrimaryEmail;
 
-      return !hasEmail ? "" : self.account.PrimaryEmail.Uri;
+      return !hasEmail ? "" : self.account.PrimaryEmail;
     },
-    getAccountAddressObjectOrDefault() {
+    getAccountAddressOrDefault() {
       let self = this,
-        hasAddress = self.account && self.account.PrimaryAddress;
-
-      return !hasAddress ? {} : self.account.PrimaryAddress;
+        noAddressInfo = !self.account || !self.account.PrimaryAddress;
+      //if no address is found return an empty object to stop
+      //null ref exception during bindings above :)
+      return noAddressInfo ? {} : self.account.PrimaryAddress;
     },
-    getAccountFormData() {
+    getAccountStateOrDefault() {
+      let self = this,
+        noStateInfo =
+          !self.account ||
+          !self.account.PrimaryAddress ||
+          !self.account.PrimaryAddress.StateProvince;
+
+      return noStateInfo ? {} : self.account.PrimaryAddress.StateProvince;
+    },
+    getAccountCountryOrDefault() {
+      let self = this,
+        noCountryInfo =
+          !self.account ||
+          !self.account.PrimaryAddress ||
+          !self.account.PrimaryAddress.Country;
+
+      return noCountryInfo ? {} : self.account.PrimaryAddress.Country;
+    },
+    getAccountPhoneOrDefault() {
+      let self = this,
+        hasPhone = self.account && self.account.PrimaryPhone;
+
+      return !hasPhone ? {} : self.account.PrimaryPhone;
+    },
+    _accountFormData(accountId, userId) {
       let self = this,
         fd = new FormData();
 
-      fd.append("mode", "configuresecurity");
-      fd.append("objid", "dfc540c2-61cf-41c1-9a1b-1493a1bbe428");
-      fd.append(
-        "authenticationMethodId",
-        "15d8062b-4218-4a19-ae4b-5b5d0c5da74e"
-      );
-      fd.append("accountId", "dfc540c2-61cf-41c1-9a1b-1493a1bbe428");
-      fd.append("isEmployeeInvited", "false");
-      fd.append("createEmployee", "false");
-      fd.append("personId", "0a493086-d705-4f38-8fb9-df8cc0240663");
-      fd.append("userName", "night5415");
-      fd.append("description", "");
-      fd.append("firstName", "michael2");
-      fd.append("middleName", "stephen");
-      fd.append("lastName", "meloy");
-      fd.append("primaryEmail", "meloymike@gmail.com");
-      fd.append("primaryPhone", "8168106977");
-      fd.append("street1", "3408 nw pink hill circle");
-      fd.append("street2", "");
-      fd.append("city", "blue springs");
-      fd.append("stateProvinceId", "316d388d-7f76-4492-b64e-50d83643cc6a");
+      fd.append("objid", accountId);
+      fd.append("accountId", accountId);
+      fd.append("personId", userId);
+      fd.append("firstName", self.account.FirstName);
+      fd.append("middleName", self.account.MiddleName);
+      fd.append("lastName", self.account.LastName);
+      fd.append("primaryEmail", self.primaryEmail.Uri);
+      fd.append("primaryPhone", self.primaryPhone.PhoneNumber);
+      fd.append("street1", self.primaryAddress.Street1);
+      fd.append("street2", self.primaryAddress.Street2);
+      fd.append("city", self.primaryAddress.City);
+      fd.append("stateProvinceId", self.$refs.stateCodeId.value);
       fd.append("countryId", "ffa4e908-d62d-4851-9952-5e4d239aa403");
-      fd.append("postalCode", "64015-9618");
+      fd.append("postalCode", self.primaryAddress.PostalCode);
 
       return fd;
     }

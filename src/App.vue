@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-menu bottom left>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
+          <v-btn icon v-on="on" :hidden="isLoggedIn">
             <v-icon>more_vert</v-icon>
           </v-btn>
         </template>
@@ -26,12 +26,13 @@
               <v-list-tile-title>Log Out</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-divider></v-divider>
           <v-list-tile>
             <v-list-tile-action>
               <v-switch v-model="darkTheme"></v-switch>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>Theme</v-list-tile-title>
+              <v-list-tile-title>Dark</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -110,14 +111,13 @@ export default {
       self.$refs.edit_account.open();
     }
   },
-  //TODO: this is only for testing!!!!!!
   data() {
     return {
       darkTheme: true
     };
   },
   computed: {
-    notLoggedInYet: {
+    isLoggedIn: {
       get() {
         return !this.$store.getters.isLoggedIn;
       }

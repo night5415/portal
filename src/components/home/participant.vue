@@ -8,7 +8,9 @@
           <v-tab-item v-for="person in dataList" :key="person.id">
             <portal-demographic v-bind:person="person"/>
           </v-tab-item>
-          <v-tab-item>messagges tab</v-tab-item>
+          <v-tab-item>
+            <portal-participant-messages/>
+          </v-tab-item>
         </v-tabs>
       </v-flex>
     </v-layout>
