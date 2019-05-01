@@ -1,7 +1,7 @@
 <template>
   <v-app :dark="darkTheme">
     <v-toolbar flat app dense>
-      <v-toolbar-title>Patient Portal</v-toolbar-title>
+      <v-toolbar-title @click="onLogo_Click" @dblclick="onLogo_DblClick">Patient Portal</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-menu bottom left>
         <template v-slot:activator="{ on }">
@@ -35,6 +35,14 @@
               <v-list-tile-title>Dark</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-switch v-model="showError"></v-switch>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Errors</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
       </v-menu>
     </v-toolbar>
@@ -43,14 +51,7 @@
     <transition name="fade" mode="out-in">
       <router-view></router-view>
     </transition>
-    <v-avatar
-      color="transparent"
-      class="fixed-logo"
-      @click="onLogo_Click"
-      @dblclick="onLogo_DblClick"
-    >
-      <v-img src="/img/icons/apple-touch-icon-180x180.png" contain height="90"></v-img>
-    </v-avatar>
+    <v-chip small color="red" class="error-chip" :hidden="!numberOfErrors">{{numberOfErrors}}</v-chip>
     <portal-account-info ref="edit_account"/>
   </v-app>
 </template> 
@@ -62,7 +63,6 @@ export default {
     //these will
     window.addEventListener("online", self.updateOnlineStatus);
     window.addEventListener("offline", self.updateOnlineStatus);
-
     self.$root.$pathComponents = {
       Confirm: self.$refs.pathConfirm.open,
       Snack: self.$refs.pathSnack.showSnack
@@ -94,7 +94,6 @@ export default {
           }
         });
     },
-    //TODO: this is only for testing!!!!!!
     onLogo_Click() {
       var self = this;
       self.$store.dispatch(
@@ -122,10 +121,20 @@ export default {
         return !this.$store.getters.isLoggedIn;
       }
     },
-    darkTheme: {
+    showError: {
       get() {
         var self = this;
-        return self.$store.getters.Dark;
+        return self.$store.getters.showErrorDialog;
+      },
+      set(value) {
+        let self = this;
+        self.$store.dispatch("updateShowErrorDialog", value);
+      }
+    },
+    numberOfErrors: {
+      get() {
+        let self = this;
+        return self.$store.getters.errorCount;
       }
     }
   }
@@ -140,7 +149,7 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
-.fixed-logo {
+.error-chip {
   position: fixed;
   bottom: 10px;
   left: 10px;

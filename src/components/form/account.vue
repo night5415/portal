@@ -166,15 +166,13 @@ export default {
       self.imgLoadingHeight = 2;
 
       accountApi
-        .cacheFirst(self, null, self.accountId)
+        .cacheFirst(self, null, null, self.accountId)
         .catch(err => {
           console.error("account vue", err);
         })
         .finally(function() {
           self.dataProgress = 100;
-          if (self.dataList.length > 0) {
-            self.account = self.dataList[0];
-          }
+
           setTimeout(() => {
             self.gridLoading = false;
             self.dataProgress = 0;

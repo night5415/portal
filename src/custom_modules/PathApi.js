@@ -41,6 +41,32 @@ const api = class Api {
     return self._callRestful('account', 'demographics');
   }
 
+  // static getParticipantCalendars() {
+  //   let scheduled = axios.get(`${store.getters.baseUrl}/~api/calendar/participantEvents?patIds=ea539742-4ee4-4418-9a95-a150767e56ee,7ffee435-4b76-4c03-9303-cdc8fe77ae2c&status=scheduled`, {
+  //     params: {
+  //       securityToken: store.getters.Token,
+  //       guardianid: this.entityId,
+  //       page: 1,
+  //       start: 0,
+  //       limit: -1
+  //     }
+  //   });
+  //   let cancelled = axios.get(`${store.getters.baseUrl}/~api/calendar/participantEvents?patIds=ea539742-4ee4-4418-9a95-a150767e56ee,7ffee435-4b76-4c03-9303-cdc8fe77ae2c&status=cancelled`, {
+  //     params: {
+  //       securityToken: store.getters.Token,
+  //       guardianid: this.entityId,
+  //       page: 1,
+  //       start: 0,
+  //       limit: -1
+  //     }
+  //   });
+
+  //   Promise.all([scheduled, cancelled]).then(function (values) {
+  //     console.log(values);
+  //   });
+
+  // }
+
   login(userName, passWord) {
     let formData = new FormData(),
       isOnline = store.getters.isOnline,

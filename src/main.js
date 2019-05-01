@@ -9,7 +9,6 @@ import Axios from "axios";
 import VueAxios from "vue-axios";
 import VueMoment from "vue-moment";
 import PathDb from "@/plugins/PathDb";
-import VueSignaturePad from "vue-signature-pad";
 
 // Components
 import './components'
@@ -25,7 +24,6 @@ Vue.use(PathFilter);
 Vue.use(PathDb);
 //custom plugin
 
-Vue.use(VueSignaturePad);
 Vue.use(VueAxios, Axios);
 Vue.use(VueMoment);
 //this is going to need some work
@@ -75,22 +73,20 @@ window.pathVue = new Vue({
     created: function () {
         var self = this;
         console.log(`Patient Portal version ${self.version}`);
-    },
-    // mounted() {
-    //     //Add some logging to Promise.Catch
-    //     (function (Promise) {
-    //         var originalCatch = Promise.prototype.catch;
-    //         Promise.prototype.catch = function (e) {
-    //             try {
-    //                 console.log('> > > > > > called .catch on %o with arguments: %o', this, arguments);
-    //                 // if (window.pathVue)
-    //                 //     window.pathVue.$pathPouch.exceptions.save(arguments);
-    //             } catch (error) {
-    //                 console.log(error);
-    //             }
-    //             return originalCatch.apply(this, arguments);
-    //         };
-    //     })(window.Promise);
-    // },
+    }
 }).$mount("#app");
+
+// (function(Promise) {
+//     var originalCatch = Promise.prototype.catch;
+//     Promise.prototype.catch = function(e) {
+//       try {
+//         e(function(err) {
+//           if (window.pathVue) window.pathVue.$pathPouch.exceptions.save(err);
+//         });
+//       } catch (error) {
+//         //console.log(error);
+//       }
+//       return originalCatch.apply(this, arguments);
+//     };
+//   })(window.Promise);
 

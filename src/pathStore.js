@@ -6,10 +6,11 @@ Vue.use(Vuex);
 // app specific state goes here
 const app = {
     state: {
-        dark: true,
         isOnline: true,
         isLoggedIn: false,
-        mini: false
+        mini: false,
+        showErrorDialog: false,
+        errorCount: 0
     },
     mutations: {
         _updateLogin(state, val) {
@@ -18,22 +19,28 @@ const app = {
         _updateIsOnline(state, val) {
             state.isOnline = val;
         },
-        _updateDark(state, val) {
-            state.dark = val;
-        },
         _updateMini(state, val) {
             state.mini = val;
+        },
+        _updateErrorDialog(state, val) {
+            state.showErrorDialog = val;
+        },
+        _updateErrorCount(state, val) {
+            state.errorCount++;
         }
     },
     getters: {
-        Dark: state => {
-            return state.dark;
-        },
         isOnline: state => {
             return state.isOnline;
         },
         isLoggedIn: state => {
             return state.isLoggedIn;
+        },
+        showErrorDialog: state => {
+            return state.showErrorDialog;
+        },
+        errorCount: state => {
+            return state.errorCount;
         }
     },
     actions: {
@@ -43,8 +50,11 @@ const app = {
         updateLogin: (context, value) => {
             context.commit("_updateLogin", value);
         },
-        updateDark: (context, value) => {
-            context.commit("_updateDark", value);
+        updateShowErrorDialog: (context, value) => {
+            context.commit('_updateErrorDialog', value)
+        },
+        updateErrorCount: (context, value) => {
+            context.commit('_updateErrorCount', value);
         }
     }
 };
@@ -104,7 +114,8 @@ const user = {
             return state.HostUserName;
         },
         userName: state => {
-            return state.HostUserName.split('/')[1];
+            let hostUserName = state.HostUserName || '';
+            return hostUserName.split('/')[1];
         },
         passWord: state => {
             return state.PassWord;

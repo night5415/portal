@@ -3,8 +3,8 @@ import store from "@/pathStore";
 import { dataStore } from "@/statics/pathConstants"
 
 const accountApi = {
-    cacheFirst: (comp, dataProp, accountId) => {
-        return _private.cache(dataStore.account, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress, accountId) => {
+        return _private.cache(dataStore.account, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.account, comp, dataProp, null, accountId);
@@ -30,8 +30,8 @@ const participantApi = {
      * @param {VueComponent} comp The component which the call is comming from 'This'
      * @param {string} dataProp An Array data property located on the component 
      */
-    cacheFirst: (comp, dataProp) => {
-        return _private.cache(dataStore.participant, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.participant, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.participant, comp, dataProp);
@@ -50,8 +50,8 @@ const participantApi = {
                 return Promise.reject(err);
             })
     },
-    cacheOnly: (comp, dataProp) => {
-        return _private.cache(dataStore.participant, comp, dataProp, true)
+    cacheOnly: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.participant, comp, dataProp, progress, true)
             .catch((err) => {
                 return Promise.reject(err);
             })
@@ -63,8 +63,8 @@ const sessionApi = {
      * @param {VueComponent} comp The component which the call is comming from 'This'
      * @param {string} dataProp An Array data property located on the component 
      */
-    cacheFirst: (comp, dataProp) => {
-        return _private.cache(dataStore.sessions, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.sessions, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.sessions, comp, dataProp);
@@ -84,8 +84,8 @@ const skillApi = {
      * @param {VueComponent} comp The component which the call is comming from 'This'
      * @param {string} dataProp An Array data property located on the component 
      */
-    cacheFirst: (comp, dataProp) => {
-        return _private.cache(dataStore.skills, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.skills, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.skills, comp, dataProp);
@@ -105,8 +105,8 @@ const invoiceApi = {
      * @param {VueComponent} comp The component which the call is comming from 'This'
      * @param {string} dataProp An Array data property located on the component 
      */
-    cacheFirst: (comp, dataProp) => {
-        return _private.cache(dataStore.invoices, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.invoices, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.invoices, comp, dataProp);
@@ -126,8 +126,8 @@ const calendarApi = {
      * @param {VueComponent} comp The component which the call is comming from 'This'
      * @param {string} dataProp An Array data property located on the component 
      */
-    cacheFirst: (comp, dataProp) => {
-        return _private.cache(dataStore.calendar, comp, dataProp, true)
+    cacheFirst: (comp, dataProp, progress) => {
+        return _private.cache(dataStore.calendar, comp, dataProp, progress, true)
             .then(() => {
                 if (store.getters.isOnline) {
                     return _private.service(dataStore.calendar, comp, dataProp);
@@ -144,7 +144,7 @@ const calendarApi = {
 
 const exceptionApi = {
     cacheOnly: (comp, dataProp) => {
-        return _private.cache(dataStore.exceptions, comp, dataProp, true)
+        return _private.cache(dataStore.exceptions, comp, null, null, true)
             .catch((err) => {
                 return Promise.reject(err);
             })
@@ -173,8 +173,8 @@ const _private = {
         var db = arguments[0],
             comp = arguments[1],
             prop = arguments[2] || 'dataList',
-            progress = arguments[4] || 'dataProgress',
-            dataOnly = arguments[3] || false;
+            progress = arguments[3] || 'dataProgress',
+            dataOnly = arguments[4] || false;
 
         if (!db)
             return Promise.reject({
@@ -210,13 +210,14 @@ const _private = {
                 });
                 comp[progress] = 50;
                 return Promise.resolve(true);
-            })
+            });
     },
     /** 
       @param {DataBase} db What local database are we looking at? (required)
       @param {VueComponent} comp The component which the call is comming from 'This'. (required)
       @param {string} [dataProp] the data property in which to place records in. (defaults to dataList)
       @param {string} [progress] the data property in which to set our progress int value. (defaults to dataProgress) 
+      @param {string} [entityId] the entity we are using for rest calls, (defaults to the current User Id)
     */
     service: function () {
         let db = arguments[0],
@@ -230,14 +231,14 @@ const _private = {
         if (!comp)
             return Promise.reject({
                 'File': 'PathData.js',
-                'LN': 94,
+                'LN': 233,
                 'Message': 'Vue Componenet is required'
             });
 
         if (!db)
             return Promise.reject({
                 'File': 'PathData.js',
-                'LN': 101,
+                'LN': 240,
                 'Message': 'Database Name is required'
             });
 
@@ -246,7 +247,7 @@ const _private = {
         if (!_service)
             return Promise.reject({
                 'File': 'PathData.js',
-                'LN': 224,
+                'LN': 249,
                 'Message': `No mathcing Api for ${db}, Please add a corresponding get() to PathApi.js`
             });
         return _service
@@ -255,7 +256,7 @@ const _private = {
                 if (response.status !== 200 || !response.data || !response.data.success) {
                     return Promise.reject({
                         'File': 'PathData.js',
-                        'LN': 230,
+                        'LN': 258,
                         'Message': `Server returned a status of ${response.status}`,
                         'response': response
                     });

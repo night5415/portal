@@ -158,6 +158,7 @@ export default {
         })
         .catch(err => {
           pathVue.$pathComponents.Snack("Update Failed!");
+          pathVue.$pathPouch.exceptions.save(err);
         })
         .finally(() => {
           self.user_save = false;

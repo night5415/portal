@@ -78,7 +78,7 @@ let pathDb = {
             exceptions: {
                 save: _exceptionFunc.save,
                 saveOrUpdate: _exceptionDb.saveOrUpdate,
-                getAll: _exceptionDb.getAll,
+                getAll: _exceptionFunc.getAll,
                 clear: _exceptionFunc.clear,
                 export: _exceptionFunc.export,
                 getRowCount: _exceptionDb.getRowCount,
@@ -104,7 +104,9 @@ let pathDb = {
         _invoiceDb = dbConfig.invoices();
     }
 };
-
+/** 
+ * This is the the config object for all the DB's
+*/
 let dbConfig = {
     init: function () {
         //add any plugins to ALL Db's
@@ -200,14 +202,30 @@ let dbConfig = {
         return db;
     }
 };
-
+/** 
+ * These object/Func allow us to implement
+ * specific behavior for each DB, example would
+ * be the exceptionDB which is not encrypted so doesn't
+ * follow the same path as the other DB's
+*/
 let _exceptionFunc = {
     save: function (exObj) {
-        let self = this;
-        return self._db.post({ date: new Date(), exception: exObj });
+        let self = this,
+            userId = pathVue.$store.getters.userId,
+            id = pathVue.$pathUtil.GenerateGuid(),
+            errorCount = pathVue.$store.getters.errorCount;
+
+        pathVue.$store.commit('_updateErrorCount', errorCount++);
+
+        return self._db.post({ Id: id, userId: userId, date: new Date(), exception: exObj });
     },
     clear: function () { },
-    export: function () { }
+    export: function () { },
+    getAll: function () {
+        let self = this;
+
+        return self._db.allDocs({ include_docs: true });
+    }
 };
 
 let _participantFunc = {

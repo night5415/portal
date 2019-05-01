@@ -52,7 +52,7 @@ export default {
       recordCount: 0,
       title: new pathVue.$moment().format("MMMM"),
       type: "month",
-      start: new Date(),
+      start: new Date().toString(),
       end: "2019-01-06",
       typeOptions: [
         { text: "Day", value: "day" },
